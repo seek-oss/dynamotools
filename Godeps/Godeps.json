@@ -92,7 +92,27 @@
 			"Rev": "90dec2183a5f5458ee79cbaf4b8e9ab910bc81a6"
 		},
 		{
+			"ImportPath": "github.com/aws/aws-sdk-go/private/protocol/query",
+			"Comment": "v1.2.4",
+			"Rev": "90dec2183a5f5458ee79cbaf4b8e9ab910bc81a6"
+		},
+		{
+			"ImportPath": "github.com/aws/aws-sdk-go/private/protocol/query/queryutil",
+			"Comment": "v1.2.4",
+			"Rev": "90dec2183a5f5458ee79cbaf4b8e9ab910bc81a6"
+		},
+		{
 			"ImportPath": "github.com/aws/aws-sdk-go/private/protocol/rest",
+			"Comment": "v1.2.4",
+			"Rev": "90dec2183a5f5458ee79cbaf4b8e9ab910bc81a6"
+		},
+		{
+			"ImportPath": "github.com/aws/aws-sdk-go/private/protocol/restxml",
+			"Comment": "v1.2.4",
+			"Rev": "90dec2183a5f5458ee79cbaf4b8e9ab910bc81a6"
+		},
+		{
+			"ImportPath": "github.com/aws/aws-sdk-go/private/protocol/xml/xmlutil",
 			"Comment": "v1.2.4",
 			"Rev": "90dec2183a5f5458ee79cbaf4b8e9ab910bc81a6"
 		},
@@ -113,6 +133,21 @@
 		},
 		{
 			"ImportPath": "github.com/aws/aws-sdk-go/service/dynamodb/dynamodbiface",
+			"Comment": "v1.2.4",
+			"Rev": "90dec2183a5f5458ee79cbaf4b8e9ab910bc81a6"
+		},
+		{
+			"ImportPath": "github.com/aws/aws-sdk-go/service/s3",
+			"Comment": "v1.2.4",
+			"Rev": "90dec2183a5f5458ee79cbaf4b8e9ab910bc81a6"
+		},
+		{
+			"ImportPath": "github.com/aws/aws-sdk-go/service/s3/s3iface",
+			"Comment": "v1.2.4",
+			"Rev": "90dec2183a5f5458ee79cbaf4b8e9ab910bc81a6"
+		},
+		{
+			"ImportPath": "github.com/aws/aws-sdk-go/service/s3/s3manager",
 			"Comment": "v1.2.4",
 			"Rev": "90dec2183a5f5458ee79cbaf4b8e9ab910bc81a6"
 		},
