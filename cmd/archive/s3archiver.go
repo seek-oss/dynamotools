@@ -24,7 +24,7 @@ type S3Config struct {
 }
 
 // ToS3 archives the dyanamo table to a file in s3 bucket
-func ToS3(c *S3Config) {
+func ToS3(c *S3Config) error {
 	s := getNewAwsSession(c.Region)
 
 	db := dynamodb.New(s)
@@ -38,7 +38,8 @@ func ToS3(c *S3Config) {
 
 	go func() {
 		if err := sc.Scan(w); err != nil {
-			log.Println(err)
+			w.Close()
+			log.Fatal(err)
 		}
 	}()
 
@@ -49,13 +50,14 @@ func ToS3(c *S3Config) {
 		ContentType: aws.String("application/json"),
 	})
 	if err != nil {
-		log.Println(err)
+		return err
 	}
 	log.Println("Backup Completed!")
+	return nil
 }
 
 func getNewAwsSession(region string) *session.Session {
-	awsconfig := defaults.Config().WithRegion(region)
+	awsconfig := defaults.Config().WithRegion(region) //.WithLogLevel(aws.LogDebug)
 	awsconfig.Credentials = defaults.CredChain(awsconfig, defaults.Handlers())
 	return session.New(awsconfig)
 }

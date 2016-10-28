@@ -79,10 +79,13 @@ func (s *parallelScanner) Scan(writer io.WriteCloser) error {
 }
 
 func (s *parallelScanner) buildScanInput(partitionIndex int) *dynamodb.ScanInput {
-	return &dynamodb.ScanInput{
+	input := &dynamodb.ScanInput{
 		TableName:     aws.String(s.cfg.tableName),
-		IndexName:     aws.String(s.cfg.index),
 		Segment:       aws.Int64(int64(partitionIndex)),
 		TotalSegments: aws.Int64(int64(s.cfg.partitions)),
 	}
+	if s.cfg.index != "" {
+		input.IndexName = aws.String(s.cfg.index)
+	}
+	return input
 }
