@@ -14,8 +14,8 @@ import (
 	"github.com/aws/aws-sdk-go/service/s3/s3manager"
 )
 
-// S3Config provides the configuration for archiving dynamo table to s3
-type S3Config struct {
+// S3ArchiveConfig provides the configuration for archiving dynamo table to s3
+type S3ArchiveConfig struct {
 	Region         string
 	TableName      string
 	TableIndex     string
@@ -24,7 +24,7 @@ type S3Config struct {
 }
 
 // ToS3 archives the dyanamo table to a file in s3 bucket
-func ToS3(c *S3Config) error {
+func ToS3(c *S3ArchiveConfig) error {
 	s := getNewAwsSession(c.Region)
 
 	db := dynamodb.New(s)
