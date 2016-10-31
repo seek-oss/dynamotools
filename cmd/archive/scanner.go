@@ -56,8 +56,12 @@ func (s *parallelScanner) Scan(writer io.WriteCloser) error {
 					items[i] = &dynamodb.AttributeValue{M: m}
 				}
 				var decodedItems []map[string]interface{}
-				decoder.Decode(&dynamodb.AttributeValue{L: items}, &decodedItems)
-				encoder.Encode(decodedItems)
+				if err := decoder.Decode(&dynamodb.AttributeValue{L: items}, &decodedItems); err != nil {
+					log.Printf("error %s whilst decoding items %v", err, items)
+				}
+				if err := encoder.Encode(decodedItems); err != nil {
+					log.Printf("error %s whilst encoding items %v", err, items)
+				}
 
 				return !lastPage
 			}); err != nil {
