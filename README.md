@@ -1,2 +1,38 @@
-# dynamo-tools
-tools to manage dynamo db
+# Dynamo Tools
+Tools to manage dynamo db
+
+## Install
+```
+go install -u github.com/SEEK-Jobs/dynamotools
+```
+## Usage
+```
+dynamotools [command] [options...]
+```
+
+### Archive
+Archives dynamodb table to a file in s3 bucket.
+
+```
+dynamotools archive -help
+
+NAME:
+   dynamotools archive - region [aws region name] 
+        table [dynamo table name] 
+        tableindex [index to use for scanning] 
+        partitions [scan partitions for parallel scanning] 
+        bucket [s3 bucket name]
+
+USAGE:
+   dynamotools archive [command options] [arguments...]
+
+DESCRIPTION:
+   archive scans the [table] using the specified [tableindex] and saves it the s3 [bucket]
+
+OPTIONS:
+   --region value, -r value      aws region name where your dynamodb table and s3 bucket is (default: "ap-southeast-2")
+   --table value, -t value       dynamodb table name
+   --tableindex value, -i value  index for scanning the dynamo table
+   --partitions value, -p value  partitions for parallel scanning (default: 1)
+   --bucket value, -b value      name of the bucket to store the archived data
+```
