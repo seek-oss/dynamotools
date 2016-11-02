@@ -34,7 +34,7 @@ func ToS3(c *S3ArchiveConfig) error {
 	r, w := io.Pipe()
 
 	u := s3manager.NewUploader(s, func(ul *s3manager.Uploader) {
-		ul.PartSize = 128 * 1024 * 1024 //128MB
+		ul.PartSize = 32 * 1024 * 1024 //32MB
 		ul.Concurrency = 10
 	})
 
