@@ -65,6 +65,7 @@ func (s *parallelScanner) Scan(writer io.WriteCloser) error {
 
 				return !lastPage
 			}); err != nil {
+				log.Printf("error %s whilst scanning items from dynamo", err)
 				return err
 			}
 			log.Println("finished processing partion no ", partitionSegment)
@@ -75,6 +76,7 @@ func (s *parallelScanner) Scan(writer io.WriteCloser) error {
 		return err
 	}
 	if err := writer.Close(); err != nil {
+		log.Printf("error %s whilst closing the writer", err)
 		return err
 	}
 

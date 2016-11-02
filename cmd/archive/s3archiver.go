@@ -34,7 +34,7 @@ func ToS3(c *S3ArchiveConfig) error {
 	r, w := io.Pipe()
 
 	u := s3manager.NewUploader(s, func(ul *s3manager.Uploader) {
-		ul.PartSize = 64 * 1024 * 1024 //128MB
+		ul.PartSize = 128 * 1024 * 1024 //128MB
 		ul.Concurrency = 10
 	})
 
@@ -52,6 +52,7 @@ func ToS3(c *S3ArchiveConfig) error {
 		ContentType: aws.String("application/json"),
 	})
 	if err != nil {
+		log.Printf("error %s whilst uploading to s3", err)
 		return err
 	}
 	log.Println("Backup Completed!")
@@ -59,7 +60,7 @@ func ToS3(c *S3ArchiveConfig) error {
 }
 
 func getNewAwsSession(region string) *session.Session {
-	awsconfig := defaults.Config().WithRegion(region).WithLogLevel(aws.LogDebugWithRequestErrors)
+	awsconfig := defaults.Config().WithRegion(region) //.WithLogLevel(aws.LogDebugWithRequestErrors)
 	awsconfig.Credentials = defaults.CredChain(awsconfig, defaults.Handlers())
 	return session.New(awsconfig)
 }
