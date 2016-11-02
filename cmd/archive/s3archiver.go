@@ -34,7 +34,7 @@ func ToS3(c *S3ArchiveConfig) error {
 	r, w := io.Pipe()
 
 	u := s3manager.NewUploader(s, func(ul *s3manager.Uploader) {
-		ul.PartSize = 32 * 1024 * 1024 //32MB
+		ul.PartSize = 64 * 1024 * 1024 //128MB
 		ul.Concurrency = 10
 	})
 
@@ -59,7 +59,7 @@ func ToS3(c *S3ArchiveConfig) error {
 }
 
 func getNewAwsSession(region string) *session.Session {
-	awsconfig := defaults.Config().WithRegion(region).WithMaxRetries(10) //.WithLogLevel(aws.LogDebug)
+	awsconfig := defaults.Config().WithRegion(region).WithLogLevel(aws.LogDebugWithRequestErrors)
 	awsconfig.Credentials = defaults.CredChain(awsconfig, defaults.Handlers())
 	return session.New(awsconfig)
 }
