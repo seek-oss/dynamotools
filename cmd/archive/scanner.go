@@ -42,8 +42,6 @@ func newParallelScanner(db dynamodbiface.DynamoDBAPI, cfg *scannerConfig) scanne
 
 func (s *parallelScanner) Scan(writer io.WriteCloser) error {
 	grp, _ := errgroup.WithContext(context.Background())
-	decoder := dynamodbattribute.NewDecoder()
-	encoder := json.NewEncoder(writer)
 
 	log.Printf("started processing %d partitions....", s.cfg.partitions)
 
@@ -56,16 +54,16 @@ func (s *parallelScanner) Scan(writer io.WriteCloser) error {
 					items[i] = &dynamodb.AttributeValue{M: m}
 				}
 				var decodedItems []map[string]interface{}
-				if err := decoder.Decode(&dynamodb.AttributeValue{L: items}, &decodedItems); err != nil {
+				if err := dynamodbattribute.NewDecoder().Decode(&dynamodb.AttributeValue{L: items}, &decodedItems); err != nil {
 					log.Printf("error %s whilst decoding items %v", err, items)
 				}
-				if err := encoder.Encode(decodedItems); err != nil {
+				if err := json.NewEncoder(writer).Encode(decodedItems); err != nil {
 					log.Printf("error %s whilst encoding items %v", err, items)
 				}
 
 				return !lastPage
 			}); err != nil {
-				log.Printf("error %s whilst scanning items from dynamo", err)
+				log.Printf("error %s whilst scanning items from dynamo partion %d", err, partitionSegment)
 				return err
 			}
 			log.Println("finished processing partion no ", partitionSegment)
@@ -89,6 +87,7 @@ func (s *parallelScanner) buildScanInput(partitionIndex int) *dynamodb.ScanInput
 		TableName:     aws.String(s.cfg.tableName),
 		Segment:       aws.Int64(int64(partitionIndex)),
 		TotalSegments: aws.Int64(int64(s.cfg.partitions)),
+		Limit:         aws.Int64(100),
 	}
 	if s.cfg.index != "" {
 		input.IndexName = aws.String(s.cfg.index)
