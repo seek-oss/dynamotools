@@ -12,7 +12,7 @@ dynamotools [command] [options...]
 ```
 
 ### Archive
-Archives dynamodb table to a file in s3 bucket.
+Archive does a parallel scan on a dynamodb table and uplodas the data in chunks to a file in s3 bucket.
 
 ```
 dynamotools archive -help
