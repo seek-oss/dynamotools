@@ -3,7 +3,8 @@ Tools to manage dynamo db
 
 ## Install
 ```
-go install -u github.com/SEEK-Jobs/dynamotools
+go get -u github.com/SEEK-Jobs/dynamotools
+go install github.com/SEEK-Jobs/dynamotools
 ```
 ## Usage
 ```
