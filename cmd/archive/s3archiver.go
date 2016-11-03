@@ -16,12 +16,15 @@ import (
 
 // S3ArchiveConfig provides the configuration for archiving dynamo table to s3
 type S3ArchiveConfig struct {
-	Region             string
-	TableName          string
-	TableIndex         string
-	ScanPartitions     int
-	Bucket             string
-	BackupFolderPrefix string
+	Region            string
+	TableName         string
+	TableIndex        string
+	ScanPartitions    int
+	ScanLimit         int
+	UploadBucket      string
+	UploadChunkSize   int64
+	UploadConcurrency int
+	BackupPrefix      string
 }
 
 // ToS3 archives the dyanamo table to a file in s3 bucket
@@ -35,8 +38,8 @@ func ToS3(c *S3ArchiveConfig) error {
 	r, w := io.Pipe()
 
 	u := s3manager.NewUploader(s, func(ul *s3manager.Uploader) {
-		ul.PartSize = 32 * 1024 * 1024 //32MB
-		ul.Concurrency = 10
+		ul.PartSize = c.UploadChunkSize * 1024 * 1024 //MB
+		ul.Concurrency = c.UploadConcurrency
 	})
 
 	go func() {
@@ -46,11 +49,11 @@ func ToS3(c *S3ArchiveConfig) error {
 		}
 	}()
 
-	key := generateBackupFileName(c.BackupFolderPrefix, c.TableName)
+	key := generateBackupFileName(c.BackupPrefix, c.TableName)
 	log.Printf("backing up data in %s", key)
 
 	_, err := u.Upload(&s3manager.UploadInput{
-		Bucket:      &c.Bucket,
+		Bucket:      &c.UploadBucket,
 		Key:         aws.String(key),
 		Body:        r,
 		ContentType: aws.String("application/json"),

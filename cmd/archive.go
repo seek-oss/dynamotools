@@ -8,8 +8,11 @@ import (
 // BuildArchive builds the cli command for archive funationality
 func BuildArchive() cli.Command {
 	return cli.Command{
-		Name:        "archive",
-		Usage:       "region [aws region name] table [dynamo table name] tableindex [index to use for scanning] partitions [scan partitions for parallel scanning] bucket [s3 bucket name]",
+		Name: "archive",
+		Usage: `region [aws region name] table [dynamo table name] tableindex [index to use for scanning] 
+						partitions [scan partitions for parallel scanning] limit [limit for scanning no of records] 
+						bucket [s3 bucket name] chunksize [chunk sizes (in MB) to be uploaded to the bucket] 
+						concurrency [concurrency for uploads to the bucket]`,
 		Description: "archive scans the [table] using the specified [tableindex] and saves it the s3 [bucket]",
 		Flags: []cli.Flag{
 			cli.StringFlag{
@@ -30,9 +33,24 @@ func BuildArchive() cli.Command {
 				Value: 1,
 				Usage: "partitions for parallel scanning",
 			},
+			cli.IntFlag{
+				Name:  "limit, l",
+				Value: 100,
+				Usage: "limit for scanning records",
+			},
 			cli.StringFlag{
 				Name:  "bucket, b",
 				Usage: "name of the bucket to store the archived data",
+			},
+			cli.Int64Flag{
+				Name:  "chunksize, cs",
+				Value: 16,
+				Usage: "chunk sizes (in MB) to be uploaded to the bucket",
+			},
+			cli.Int64Flag{
+				Name:  "concurrency, uc",
+				Value: 10,
+				Usage: "concurrency for uploads to the bucket",
 			},
 			cli.StringFlag{
 				Name:  "prefix, pf",
@@ -50,12 +68,15 @@ func BuildArchive() cli.Command {
 		},
 		Action: func(c *cli.Context) error {
 			return archive.ToS3(&archive.S3ArchiveConfig{
-				Region:             c.String("region"),
-				TableName:          c.String("table"),
-				TableIndex:         c.String("tableindex"),
-				Bucket:             c.String("bucket"),
-				BackupFolderPrefix: c.String("prefix"),
-				ScanPartitions:     c.Int("partitions"),
+				Region:            c.String("region"),
+				TableName:         c.String("table"),
+				TableIndex:        c.String("tableindex"),
+				ScanPartitions:    c.Int("partitions"),
+				ScanLimit:         c.Int("limit"),
+				UploadBucket:      c.String("bucket"),
+				UploadChunkSize:   c.Int64("chunksize"),
+				UploadConcurrency: c.Int("concurrency"),
+				BackupPrefix:      c.String("prefix"),
 			})
 
 		},

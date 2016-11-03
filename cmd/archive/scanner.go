@@ -26,13 +26,10 @@ type scannerConfig struct {
 	tableName  string
 	index      string
 	partitions int
+	limit      int
 }
 
 func newScannerConfig(tableName, index string, partitions int) *scannerConfig {
-	if partitions < 1 {
-		partitions = 1
-	}
-
 	return &scannerConfig{tableName: tableName, index: index, partitions: partitions}
 }
 
@@ -87,7 +84,7 @@ func (s *parallelScanner) buildScanInput(partitionIndex int) *dynamodb.ScanInput
 		TableName:     aws.String(s.cfg.tableName),
 		Segment:       aws.Int64(int64(partitionIndex)),
 		TotalSegments: aws.Int64(int64(s.cfg.partitions)),
-		Limit:         aws.Int64(100),
+		Limit:         aws.Int64(int64(s.cfg.limit)),
 	}
 	if s.cfg.index != "" {
 		input.IndexName = aws.String(s.cfg.index)
