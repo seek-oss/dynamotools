@@ -1,4 +1,4 @@
-# Dynamo Tools
+# Dynamodb Tools
 Tools to manage dynamo db
 
 ## Install
