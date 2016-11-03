@@ -1,7 +1,7 @@
 package cmd
 
 import (
-	"github.com/SEEK-Jobs/dynamotools/cmd/archive"
+	"github.com/SEEK-Jobs/dynamotools/archive"
 	"github.com/urfave/cli"
 )
 
