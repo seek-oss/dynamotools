@@ -16,11 +16,12 @@ import (
 
 // S3ArchiveConfig provides the configuration for archiving dynamo table to s3
 type S3ArchiveConfig struct {
-	Region         string
-	TableName      string
-	TableIndex     string
-	ScanPartitions int
-	Bucket         string
+	Region             string
+	TableName          string
+	TableIndex         string
+	ScanPartitions     int
+	Bucket             string
+	BackupFolderPrefix string
 }
 
 // ToS3 archives the dyanamo table to a file in s3 bucket
@@ -45,9 +46,12 @@ func ToS3(c *S3ArchiveConfig) error {
 		}
 	}()
 
+	key := generateBackupFileName(c.BackupFolderPrefix, c.TableName)
+	log.Printf("backing up data in %s", key)
+
 	_, err := u.Upload(&s3manager.UploadInput{
 		Bucket:      &c.Bucket,
-		Key:         aws.String(fmt.Sprintf("%s/%s.json", time.Now().Format("2006-01-02"), c.TableName)),
+		Key:         aws.String(key),
 		Body:        r,
 		ContentType: aws.String("application/json"),
 	})
@@ -57,6 +61,14 @@ func ToS3(c *S3ArchiveConfig) error {
 	}
 	log.Println("Backup Completed!")
 	return nil
+}
+
+func generateBackupFileName(prefix, fileName string) string {
+	if prefix != "" {
+		return fmt.Sprintf("%s-%s/%s.json", prefix, time.Now().Format("2006-01-02"), fileName)
+	}
+
+	return fmt.Sprintf("%s/%s.json", time.Now().Format("2006-01-02"), fileName)
 }
 
 func getNewAwsSession(region string) *session.Session {

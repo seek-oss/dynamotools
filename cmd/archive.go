@@ -34,6 +34,10 @@ func BuildArchive() cli.Command {
 				Name:  "bucket, b",
 				Usage: "name of the bucket to store the archived data",
 			},
+			cli.StringFlag{
+				Name:  "prefix, pf",
+				Usage: "prefix for the folder where archived data will be stored (optional)",
+			},
 		},
 		SkipFlagParsing: false,
 		Before: func(c *cli.Context) error {
@@ -46,11 +50,12 @@ func BuildArchive() cli.Command {
 		},
 		Action: func(c *cli.Context) error {
 			return archive.ToS3(&archive.S3ArchiveConfig{
-				Region:         c.String("region"),
-				TableName:      c.String("table"),
-				TableIndex:     c.String("tableindex"),
-				Bucket:         c.String("bucket"),
-				ScanPartitions: c.Int("partitions"),
+				Region:             c.String("region"),
+				TableName:          c.String("table"),
+				TableIndex:         c.String("tableindex"),
+				Bucket:             c.String("bucket"),
+				BackupFolderPrefix: c.String("prefix"),
+				ScanPartitions:     c.Int("partitions"),
 			})
 
 		},
