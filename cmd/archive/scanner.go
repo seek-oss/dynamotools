@@ -29,8 +29,8 @@ type scannerConfig struct {
 	limit      int
 }
 
-func newScannerConfig(tableName, index string, partitions int) *scannerConfig {
-	return &scannerConfig{tableName: tableName, index: index, partitions: partitions}
+func newScannerConfig(tableName, index string, partitions, limit int) *scannerConfig {
+	return &scannerConfig{tableName: tableName, index: index, partitions: partitions, limit: limit}
 }
 
 func newParallelScanner(db dynamodbiface.DynamoDBAPI, cfg *scannerConfig) scanner {

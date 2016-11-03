@@ -33,7 +33,7 @@ func ToS3(c *S3ArchiveConfig) error {
 
 	db := dynamodb.New(s)
 
-	sc := newParallelScanner(db, newScannerConfig(c.TableName, c.TableIndex, c.ScanPartitions))
+	sc := newParallelScanner(db, newScannerConfig(c.TableName, c.TableIndex, c.ScanPartitions, c.ScanLimit))
 
 	r, w := io.Pipe()
 
