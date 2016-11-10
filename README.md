@@ -12,7 +12,7 @@ dynamotools [command] [options...]
 ```
 
 ### Archive
-Archive does a parallel scan on a dynamodb table and uplodas the data in chunks to a file in s3 bucket.
+Archive does a parallel scan on a dynamodb table and uploads the data in chunks to a file in s3 bucket.
 
 ```
 dynamotools archive -help
@@ -39,4 +39,24 @@ OPTIONS:
    --chunksize value, --cs value    chunk sizes (in MB) to be uploaded to the bucket (default: 16)
    --concurrency value, --uc value  concurrency for uploads to the bucket (default: 10)
    --prefix value, --pf value       prefix for the folder where archived data will be stored (optional)
+```
+
+### Restore
+Restore downloads the restore file from s3 bucket and puts the json data from the file into dynamodb.
+
+```
+NAME:
+   dynamotools restore - region [aws region name] table [dynamo table name] bucket [s3 bucket name] file [restore file in the bucket]
+
+USAGE:
+   dynamotools restore [command options] [arguments...]
+
+DESCRIPTION:
+   restore downaloads the [file] from the [bucket] and inserts the records into the [table]
+
+OPTIONS:
+   --region value, -r value  aws region name where your dynamodb table and s3 bucket is (default: "ap-southeast-2")
+   --table value, -t value   dynamodb table name
+   --bucket value, -b value  name of the bucket to store the archived data
+   --file value, -f value    restore file in the bucket with json content
 ```
