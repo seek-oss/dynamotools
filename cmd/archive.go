@@ -39,6 +39,22 @@ func BuildArchive() cli.Command {
 				Usage: "limit for scanning records",
 			},
 			cli.StringFlag{
+				Name:  "filtername, fn",
+				Usage: "name of the scan filter attribute",
+			},
+			cli.StringFlag{
+				Name:  "filtertype, ft",
+				Usage: "type of the scan filter attribute (string|number)",
+			},
+			cli.StringFlag{
+				Name:  "filteroperator, fo",
+				Usage: "operator for the scan filter ( < | = | > )",
+			},
+			cli.StringFlag{
+				Name:  "filtervalue, fv",
+				Usage: "value for the scan filter",
+			},
+			cli.StringFlag{
 				Name:  "bucket, b",
 				Usage: "name of the bucket to store the archived data",
 			},
@@ -73,6 +89,10 @@ func BuildArchive() cli.Command {
 				TableIndex:        c.String("tableindex"),
 				ScanPartitions:    c.Int("partitions"),
 				ScanLimit:         c.Int("limit"),
+				ScanFilterName:    c.String("filtername"),
+				ScanFilterType:    c.String("filtertype"),
+				ScanFilterOpertor: c.String("filteroperator"),
+				ScanFilterValue:   c.String("filtervalue"),
 				UploadBucket:      c.String("bucket"),
 				UploadChunkSize:   c.Int64("chunksize"),
 				UploadConcurrency: c.Int("concurrency"),

@@ -3,6 +3,7 @@ package archive
 import (
 	"context"
 	"encoding/json"
+	"fmt"
 	"io"
 	"log"
 
@@ -23,14 +24,20 @@ type parallelScanner struct {
 }
 
 type scannerConfig struct {
-	tableName  string
-	index      string
-	partitions int
-	limit      int
+	tableName           string
+	index               string
+	partitions          int
+	limit               int
+	filterAttribute     string
+	filterAttributeType string
+	filterOperator      string
+	filterValue         string
 }
 
-func newScannerConfig(tableName, index string, partitions, limit int) *scannerConfig {
-	return &scannerConfig{tableName: tableName, index: index, partitions: partitions, limit: limit}
+func newScannerConfig(tableName, index string, partitions, limit int, filterAttribute, filterAttributeType, filterOperator, filterValue string) *scannerConfig {
+	return &scannerConfig{tableName: tableName, index: index, partitions: partitions, limit: limit,
+		filterAttribute: filterAttribute, filterAttributeType: filterAttributeType, filterOperator: filterOperator, filterValue: filterValue,
+	}
 }
 
 func newParallelScanner(db dynamodbiface.DynamoDBAPI, cfg *scannerConfig) scanner {
@@ -54,10 +61,11 @@ func (s *parallelScanner) Scan(writer io.WriteCloser) error {
 				if err := dynamodbattribute.NewDecoder().Decode(&dynamodb.AttributeValue{L: items}, &decodedItems); err != nil {
 					log.Printf("error %s whilst decoding items %v", err, items)
 				}
-				if err := json.NewEncoder(writer).Encode(decodedItems); err != nil {
-					log.Printf("error %s whilst encoding items %v", err, items)
+				if decodedItems != nil {
+					if err := json.NewEncoder(writer).Encode(decodedItems); err != nil {
+						log.Printf("error %s whilst encoding items %v", err, items)
+					}
 				}
-
 				return !lastPage
 			}); err != nil {
 				log.Printf("error %s whilst scanning items from dynamo partion %d", err, partitionSegment)
@@ -89,5 +97,16 @@ func (s *parallelScanner) buildScanInput(partitionIndex int) *dynamodb.ScanInput
 	if s.cfg.index != "" {
 		input.IndexName = aws.String(s.cfg.index)
 	}
+
+	if s.cfg.filterAttribute != "" && s.cfg.filterAttributeType != "" && s.cfg.filterOperator != "" && s.cfg.filterValue != "" {
+		input.FilterExpression = aws.String(fmt.Sprintf("#name %s :val", s.cfg.filterOperator))
+		input.ExpressionAttributeNames = map[string]*string{"#name": &s.cfg.filterAttribute}
+		if s.cfg.filterAttributeType == "string" {
+			input.ExpressionAttributeValues = map[string]*dynamodb.AttributeValue{":val": &dynamodb.AttributeValue{S: aws.String(s.cfg.filterValue)}}
+		} else if s.cfg.filterAttributeType == "number" {
+			input.ExpressionAttributeValues = map[string]*dynamodb.AttributeValue{":val": &dynamodb.AttributeValue{N: aws.String(s.cfg.filterValue)}}
+		}
+	}
+
 	return input
 }
