@@ -21,6 +21,10 @@ type S3ArchiveConfig struct {
 	TableIndex        string
 	ScanPartitions    int
 	ScanLimit         int
+	ScanFilterName    string
+	ScanFilterValue   string
+	ScanFilterType    string
+	ScanFilterOpertor string
 	UploadBucket      string
 	UploadChunkSize   int64
 	UploadConcurrency int
@@ -33,7 +37,8 @@ func ToS3(c *S3ArchiveConfig) error {
 
 	db := dynamodb.New(s)
 
-	sc := newParallelScanner(db, newScannerConfig(c.TableName, c.TableIndex, c.ScanPartitions, c.ScanLimit))
+	sc := newParallelScanner(db, newScannerConfig(c.TableName, c.TableIndex, c.ScanPartitions, c.ScanLimit,
+		c.ScanFilterName, c.ScanFilterType, c.ScanFilterOpertor, c.ScanFilterValue))
 
 	r, w := io.Pipe()
 
