@@ -70,7 +70,7 @@ func BuildArchive() cli.Command {
 			},
 			cli.StringFlag{
 				Name:  "prefix, pf",
-				Usage: "prefix for the folder where archived data will be stored (optional)",
+				Usage: "folder where archived data will be stored (optional)",
 			},
 		},
 		SkipFlagParsing: false,
