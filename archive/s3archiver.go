@@ -73,7 +73,7 @@ func ToS3(c *S3ArchiveConfig) error {
 
 func generateBackupFileName(prefix, fileName string) string {
 	if prefix != "" {
-		return fmt.Sprintf("%s-%s/%s.json", prefix, time.Now().Format("2006-01-02"), fileName)
+		return fmt.Sprintf("%s/%s/%s.json", prefix, time.Now().Format("2006-01-02"), fileName)
 	}
 
 	return fmt.Sprintf("%s/%s.json", time.Now().Format("2006-01-02"), fileName)

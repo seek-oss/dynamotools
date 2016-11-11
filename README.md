@@ -42,7 +42,7 @@ OPTIONS:
    --bucket value, -b value            name of the bucket to store the archived data
    --chunksize value, --cs value       chunk sizes (in MB) to be uploaded to the bucket (default: 16)
    --concurrency value, --uc value     concurrency for uploads to the bucket (default: 10)
-   --prefix value, --pf value          prefix for the folder where archived data will be stored (optional)
+   --prefix value, --pf value          folder where archived data will be stored (optional)
 ```
 
 ### Restore
