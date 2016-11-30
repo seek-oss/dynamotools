@@ -41,10 +41,14 @@ func ToDyanmo(c *DynamoResotreConfig) error {
 	defer os.Remove(file.Name())
 
 	log.Println("downloading restore file ....")
-	dl.Download(file, &s3.GetObjectInput{
+	_, err = dl.Download(file, &s3.GetObjectInput{
 		Bucket: &c.Bucket,
 		Key:    &c.RestoreFile,
 	})
+
+	if err != nil {
+		return err
+	}
 
 	file.Seek(0, 0)
 	dec := json.NewDecoder(file)
