@@ -2,6 +2,7 @@ package restore
 
 import (
 	"log"
+	"time"
 
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/service/dynamodb"
@@ -14,7 +15,7 @@ type batchWriter struct {
 	table string
 }
 
-func (bw *batchWriter) writeBatch(requestsChan chan []*dynamodb.WriteRequest) error {
+func (bw *batchWriter) writeBatch(requestsChan chan []*dynamodb.WriteRequest, delay time.Duration) error {
 	for reqs := range requestsChan {
 		resp, err := bw.db.BatchWriteItem(&dynamodb.BatchWriteItemInput{
 			RequestItems: map[string][]*dynamodb.WriteRequest{
@@ -22,12 +23,16 @@ func (bw *batchWriter) writeBatch(requestsChan chan []*dynamodb.WriteRequest) er
 			},
 			ReturnConsumedCapacity: aws.String(dynamodb.ReturnConsumedCapacityTotal),
 		})
-		if len(resp.UnprocessedItems) > 0 {
-			log.Printf("warning: failed processing %d items", len(resp.UnprocessedItems[bw.table]))
-			//TODO: Retry unprocessed items
-			for _, ui := range resp.UnprocessedItems {
-				log.Printf("%v", ui)
-			}
+		if len(resp.UnprocessedItems) != 0 {
+			log.Println("warning unprocessed items found")
+			log.Printf("retrying unprocessed items after %v", delay)
+			time.Sleep(delay)
+
+			// create a temporary channel and recurse.
+			queueWrites := make(chan []*dynamodb.WriteRequest, 1)
+			queueWrites <- resp.UnprocessedItems[bw.table]
+			close(queueWrites)
+			bw.writeBatch(queueWrites, 2*delay)
 		}
 
 		if err != nil {
@@ -38,7 +43,7 @@ func (bw *batchWriter) writeBatch(requestsChan chan []*dynamodb.WriteRequest) er
 }
 
 func (bw *batchWriter) createBatchWrites(in chan map[string]interface{}) chan []*dynamodb.WriteRequest {
-	const flushSize = 25 // TODO: should this be configurable
+	const flushSize = 25 // TODO: should be configurable
 	out := make(chan []*dynamodb.WriteRequest)
 	var chunk []*dynamodb.WriteRequest
 	go func() {
@@ -72,7 +77,7 @@ func (bw *batchWriter) createBatchWrites(in chan map[string]interface{}) chan []
 }
 
 func (bw *batchWriter) Write(input chan map[string]interface{}) error {
-	return bw.writeBatch(bw.createBatchWrites(input))
+	return bw.writeBatch(bw.createBatchWrites(input), 250*time.Millisecond)
 }
 
 // NewDynamoBatchWriter creates new dynamo writer which sends the data to dynamo in batches of 25 requests
