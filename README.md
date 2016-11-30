@@ -62,5 +62,6 @@ OPTIONS:
    --region value, -r value  aws region name where your dynamodb table and s3 bucket is (default: "ap-southeast-2")
    --table value, -t value   dynamodb table name
    --bucket value, -b value  name of the bucket to store the archived data
+   --workers value, -w value  number of parallel workers putting data in dynamodb table (default: 1)
    --file value, -f value    restore file in the bucket with json content
 ```
