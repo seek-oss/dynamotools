@@ -1,3 +1,5 @@
+# This tool is no longer being maintained under this repository, for the latest version please go [here](https://github.com/gsblue/dynamotools)
+
 # Dynamodb Tools
 Tools to manage dynamo db
 
